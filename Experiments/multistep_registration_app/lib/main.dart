@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'screens/registration_screen.dart';
+import 'screens/personal_details_screen.dart';
 
 void main() {
   runApp(const RegistrationApp());
@@ -13,7 +13,7 @@ class RegistrationApp extends StatelessWidget {
     return MaterialApp(
       title: 'Student Registration',
       theme: ThemeData(primarySwatch: Colors.red),
-      home: const RegistrationScreen(),
+      home: const PersonalDetailsScreen(),
     );
   }
 }

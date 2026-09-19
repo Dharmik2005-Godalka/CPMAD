@@ -2,18 +2,30 @@ class Student {
   String name;
   String email;
   String phone;
-  String gender;
-  List<String> courses;
+  String password;
   double age;
-  bool wantsUpdates;
+  String tenthPercentage;
+  String tenthSchool;
+  String twelfthPercentage;
+  String twelfthSchool;
+  String appliedCourse;
+  List<String> skills;
+  bool wantsNotifications;
+  bool confirmedInfo;
 
   Student({
     required this.name,
     required this.email,
     required this.phone,
-    required this.gender,
-    required this.courses,
+    required this.password,
     required this.age,
-    required this.wantsUpdates,
+    this.tenthPercentage = '',
+    this.tenthSchool = '',
+    this.twelfthPercentage = '',
+    this.twelfthSchool = '',
+    this.appliedCourse = '',
+    this.skills = const [],
+    this.wantsNotifications = false,
+    this.confirmedInfo = false,
   });
 }
