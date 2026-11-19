@@ -4,6 +4,7 @@ import '../models/product.dart';
 import '../providers/cart_provider.dart';
 import '../utils/format.dart';
 import 'product_image.dart';
+import '../providers/wishlist_provider.dart';
 
 class ProductCard extends StatelessWidget 
 {
@@ -19,7 +20,39 @@ class ProductCard extends StatelessWidget
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(child: ProductImage(url: product.thumbnail)),
+          Expanded(
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                ProductImage(url: product.thumbnail),
+                Positioned(
+                  top: 4,
+                  right: 4,
+                  child: Consumer<WishlistProvider>(
+                    builder: (context, wishlist, _) {
+                      final liked = wishlist.isWishlisted(product);
+                      return Container(
+                        decoration: const BoxDecoration(
+                          color: Colors.white70,
+                          shape: BoxShape.circle,
+                        ),
+                        child: IconButton(
+                          iconSize: 20,
+                          visualDensity: VisualDensity.compact,
+                          icon: Icon(
+                            liked ? Icons.favorite : Icons.favorite_border,
+                            color: Colors.red,
+                          ),
+                          onPressed: () => wishlist.toggle(product),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+          
           Padding(
             padding: const EdgeInsets.fromLTRB(10, 8, 10, 0),
             child: Column(

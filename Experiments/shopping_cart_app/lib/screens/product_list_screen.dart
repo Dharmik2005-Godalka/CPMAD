@@ -5,6 +5,8 @@ import '../providers/product_provider.dart';
 import '../utils/format.dart';
 import '../widgets/product_card.dart';
 import 'cart_screen.dart';
+import '../providers/wishlist_provider.dart';
+import 'wishlist_screen.dart';
 
 class ProductListScreen extends StatelessWidget 
 {
@@ -20,6 +22,24 @@ class ProductListScreen extends StatelessWidget
         title: const Text('Shop'),
         actions: 
         [  
+          Consumer<WishlistProvider>(
+            builder: (context, wishlist, _) {
+              return IconButton(
+                icon: Badge(
+                  isLabelVisible: wishlist.count > 0,
+                  label: Text('${wishlist.count}'),
+                  child: const Icon(Icons.favorite_border),
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const WishlistScreen()),
+                  );
+                },
+              );
+            },
+          ),
+          
           Consumer<CartProvider>(
             builder: (context, cart, _) 
             {

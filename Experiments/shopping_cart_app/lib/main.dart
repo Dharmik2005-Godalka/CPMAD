@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'providers/cart_provider.dart';
 import 'providers/product_provider.dart';
 import 'screens/product_list_screen.dart';
+import 'providers/wishlist_provider.dart';
 
 void main() 
 {
@@ -15,6 +16,7 @@ void main()
           create: (_) => ProductProvider()..fetchProducts(),
         ),
         ChangeNotifierProvider(create: (_) => CartProvider()),
+        ChangeNotifierProvider(create: (_) => WishlistProvider()),
       ],
       child: const MyApp(),
     ),

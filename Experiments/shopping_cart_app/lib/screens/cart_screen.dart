@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/cart_provider.dart';
 import '../utils/format.dart';
 import '../widgets/cart_item_tile.dart';
+import 'checkout_screen.dart';
 
 class CartScreen extends StatelessWidget {
   const CartScreen({super.key});
@@ -46,13 +47,13 @@ class CartScreen extends StatelessWidget {
                     },
                   ),
                 ),
-                buildSummary(cart),
+                buildSummary(context, cart),
               ],
             ),
     );
   }
 
-  Widget buildSummary(CartProvider cart) {
+    Widget buildSummary(BuildContext context, CartProvider cart) {
     final taxPercent = (CartProvider.taxRate * 100).toInt();
 
     return Container(
@@ -72,6 +73,22 @@ class CartScreen extends StatelessWidget {
             buildRow('Tax ($taxPercent%)', formatPrice(cart.tax)),
             const Divider(),
             buildRow('Total', formatPrice(cart.total), bold: true),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              height: 44,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const CheckoutScreen(),
+                    ),
+                  );
+                },
+                child: const Text('Proceed to checkout'),
+              ),
+            ),
           ],
         ),
       ),
