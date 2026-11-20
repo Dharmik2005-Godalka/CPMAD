@@ -31,3 +31,11 @@ String sortLabel(StudentSort sort)
       return 'Year';
   }
 }
+
+const List<String> kEventCategories = [
+  'Tech', 'Academic', 'Cultural', 'Sports', 'Other',
+];
+
+enum EventFilter { all, upcoming, going }
+
+enum NoteFilter { all, pinned }

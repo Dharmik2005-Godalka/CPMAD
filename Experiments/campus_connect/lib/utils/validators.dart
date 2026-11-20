@@ -42,4 +42,11 @@ class Validators {
     }
     return null;
   }
+
+  static String? required(String? value, String field) 
+  {
+  if (value == null || value.trim().isEmpty) return 'Enter the $field';
+  if (value.trim().length < 3) return 'The $field is too short';
+  return null;
+  }
 }

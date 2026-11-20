@@ -5,6 +5,9 @@ import 'settings_screen.dart';
 import 'student_list_screen.dart';
 import 'dashboard_screen.dart';
 import 'events_screen.dart';
+import '../providers/event_provider.dart';
+import '../providers/note_provider.dart';
+import 'notes_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -18,6 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Widget> _pages = const [
     EventsScreen(),
+    NotesScreen(),
     StudentListScreen(),
     DashboardScreen(),
     SettingsScreen(),
@@ -27,6 +31,8 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     context.read<StudentProvider>().listen();
+    context.read<EventProvider>().listen();
+    context.read<NoteProvider>().listen();
   }
 
   @override
@@ -56,6 +62,11 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icon(Icons.settings_outlined),
             selectedIcon: Icon(Icons.settings),
             label: 'Settings',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.note_alt_outlined),
+            selectedIcon: Icon(Icons.note_alt),
+            label: 'Notes',
           ),
         ],
       ),

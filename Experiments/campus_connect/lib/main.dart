@@ -7,6 +7,8 @@ import 'providers/student_provider.dart';
 import 'providers/theme_provider.dart';
 import 'utils/app_routes.dart';
 import 'utils/app_theme.dart';
+import 'providers/event_provider.dart';
+import 'providers/note_provider.dart';
 
 Future<void> main() async 
 {
@@ -24,6 +26,8 @@ Future<void> main() async
         ChangeNotifierProvider.value(value: themeProvider),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => StudentProvider()),
+        ChangeNotifierProvider(create: (_) => EventProvider()),
+        ChangeNotifierProvider(create: (_) => NoteProvider()),
       ],
       child: const MyApp(),
     ),

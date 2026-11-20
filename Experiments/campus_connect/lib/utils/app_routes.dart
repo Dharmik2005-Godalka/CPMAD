@@ -7,6 +7,9 @@ import '../screens/splash_screen.dart';
 import '../screens/student_details_screen.dart';
 import '../screens/student_form_screen.dart';
 import '../screens/onboarding_screen.dart';
+import '../models/note.dart';
+import '../screens/event_form_screen.dart';
+import '../screens/note_editor_screen.dart';
 
 class AppRoutes 
 {
@@ -16,7 +19,9 @@ class AppRoutes
   static const home = '/home';
   static const studentDetails = '/student-details';
   static const studentForm = '/student-form';
-    static const onboarding = '/onboarding';
+  static const onboarding = '/onboarding';
+  static const eventForm = '/event-form';
+  static const noteEditor = '/note-editor';
 
   static Route<dynamic> generateRoute(RouteSettings settings) 
   {
@@ -38,6 +43,10 @@ class AppRoutes
         return _page(StudentFormScreen(
           student: settings.arguments as Student?,
         ));
+      case eventForm:
+        return _page(const EventFormScreen());
+      case noteEditor:
+        return _page(NoteEditorScreen(note: settings.arguments as Note?));
       case splash:
       default:
         return _page(const SplashScreen());

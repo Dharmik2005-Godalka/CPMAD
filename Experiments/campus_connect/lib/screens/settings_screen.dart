@@ -6,6 +6,8 @@ import '../providers/theme_provider.dart';
 import '../utils/app_routes.dart';
 import '../widgets/responsive_center.dart';
 import '../utils/app_theme.dart';
+import '../providers/event_provider.dart';
+import '../providers/note_provider.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -104,6 +106,8 @@ class SettingsScreen extends StatelessWidget {
     if (confirmed != true || !context.mounted) return;
 
     context.read<StudentProvider>().stop();
+    context.read<EventProvider>().stop();   // add
+    context.read<NoteProvider>().stop();    // add
     await context.read<AuthProvider>().logout();
     if (!context.mounted) return;
 

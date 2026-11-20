@@ -1,122 +1,184 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../models/event.dart';
-import '../services/mock_event_service.dart';
+import '../providers/event_provider.dart';
+import '../utils/app_routes.dart';
+import '../utils/constants.dart';
 import '../utils/extensions.dart';
+import '../widgets/event_card.dart';
 import '../widgets/state_views.dart';
 
-class EventsScreen extends StatefulWidget {
+class EventsScreen extends StatelessWidget {
   const EventsScreen({super.key});
 
   @override
-  State<EventsScreen> createState() => _EventsScreenState();
+  Widget build(BuildContext context) {
+    final provider = context.watch<EventProvider>();
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Events')),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => Navigator.pushNamed(context, AppRoutes.eventForm),
+        icon: const Icon(Icons.add),
+        label: const Text('Add'),
+      ),
+      body: _buildBody(context, provider),
+    );
+  }
+
+  Widget _buildBody(BuildContext context, EventProvider provider) {
+    if (provider.isLoading) return const LoadingView();
+
+    if (provider.error != null) {
+      return ErrorView(message: provider.error!, onRetry: provider.retry);
+    }
+
+    if (provider.events.isEmpty) {
+      return const EmptyView(
+        icon: Icons.event_busy,
+        message: 'No events yet.\nTap Add to create the first one.',
+      );
+    }
+
+    final events = provider.filteredEvents;
+
+    return Column(
+      children: [
+        const _EventFilters(),
+        Expanded(
+          child: events.isEmpty
+              ? const EmptyView(
+                  icon: Icons.search_off,
+                  message: 'No events match your filters',
+                )
+              : ListView.builder(
+                  padding: const EdgeInsets.only(bottom: 90),
+                  itemCount: events.length,
+                  itemBuilder: (context, index) {
+                    final event = events[index];
+                    return EventCard(
+                      key: ValueKey(event.id),
+                      event: event,
+                      isAttending: provider.isGoing(event),
+                      onTap: () => _showDetails(context, event),
+                      onRsvp: () => _rsvp(context, event),
+                    );
+                  },
+                ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _rsvp(BuildContext context, Event event) async {
+    final provider = context.read<EventProvider>();
+    final messenger = ScaffoldMessenger.of(context);
+    final wasGoing = provider.isGoing(event);
+
+    try {
+      await provider.toggleRsvp(event);
+      messenger.hideCurrentSnackBar();
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(wasGoing ? 'RSVP cancelled' : "You're going!"),
+          duration: const Duration(seconds: 1),
+        ),
+      );
+    } catch (_) {
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Could not update RSVP')),
+      );
+    }
+  }
+
+  void _showDetails(BuildContext context, Event event) {
+    showModalBottomSheet(
+      context: context,
+      builder: (_) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(event.title, style: Theme.of(context).textTheme.titleLarge),
+              const SizedBox(height: 8),
+              Text('${event.dateTime.formatDateTime()}  •  ${event.location}'),
+              Text('By ${event.organizer}'),
+              const SizedBox(height: 12),
+              Text(event.description),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
 
-class _EventsScreenState extends State<EventsScreen> {
-  final MockEventService _service = MockEventService();
-  late Future<List<Event>> _eventsFuture;
-  String _query = '';
-
-  @override
-  void initState() {
-    super.initState();
-    _eventsFuture = _service.fetchEvents();
-  }
-
-  void _reload() {
-    setState(() {
-      _eventsFuture = _service.fetchEvents();
-    });
-  }
+// const widget + select: only the chips / segments rebuild when a filter changes
+class _EventFilters extends StatelessWidget {
+  const _EventFilters();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Events'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            tooltip: 'Reload',
-            onPressed: _reload,
+    final category =
+        context.select<EventProvider, String>((p) => p.selectedCategory);
+    final filter =
+        context.select<EventProvider, EventFilter>((p) => p.filter);
+    final provider = context.read<EventProvider>();
+    final categories = ['All', ...kEventCategories];
+
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(12, 12, 12, 4),
+          child: TextField(
+            decoration: InputDecoration(
+              hintText: 'Search events',
+              prefixIcon: const Icon(Icons.search),
+              isDense: true,
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            onChanged: provider.setSearchQuery,
           ),
-        ],
-      ),
-      body: FutureBuilder<List<Event>>(
-        future: _eventsFuture,
-        builder: (context, snapshot) 
-        {
-          if (snapshot.connectionState == ConnectionState.waiting) 
-          {
-            return const LoadingView();
-          }
-
-          if (snapshot.hasError) {
-            return ErrorView(
-              message: 'Could not load events. Please try again.',
-              onRetry: _reload,
-            );
-          }
-
-          final events = snapshot.data ?? [];
-          if (events.isEmpty) {
-            return const EmptyView(
-              icon: Icons.event_busy,
-              message: 'No events yet',
-            );
-          }
-
-          final results = events.search(_query); 
-
-          return Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(12, 12, 12, 4),
-                child: TextField(
-                  decoration: InputDecoration(
-                    hintText: 'Search events',
-                    prefixIcon: const Icon(Icons.search),
-                    isDense: true,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  onChanged: (value) => setState(() => _query = value),
+        ),
+        SizedBox(
+          height: 50,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            itemCount: categories.length,
+            itemBuilder: (context, index) {
+              final c = categories[index];
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                child: ChoiceChip(
+                  label: Text(c),
+                  selected: category == c,
+                  onSelected: (_) => provider.setCategory(c),
                 ),
-              ),
-              Expanded(
-                child: results.isEmpty
-                    ? const EmptyView(
-                        icon: Icons.search_off,
-                        message: 'No events match your search',
-                      )
-                    : ListView.builder(
-                        itemCount: results.length,
-                        itemBuilder: (context, index) {
-                          final event = results[index];
-                          return Card(
-                            margin: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 6,
-                            ),
-                            child: ListTile(
-                              isThreeLine: true,
-                              leading: const CircleAvatar(
-                                child: Icon(Icons.event),
-                              ),
-                              title: Text(event.title),
-                              subtitle: Text(
-                                '${event.dateTime.relativeDay()}  •  ${event.dateTime.formatTime()}\n${event.location}',
-                              ),
-                              trailing: Text('${event.rsvpCount} going'),
-                            ),
-                          );
-                        },
-                      ),
-              ),
-            ],
-          );
-        },
-      ),
+              );
+            },
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: SizedBox(
+            width: double.infinity,
+            child: SegmentedButton<EventFilter>(
+              showSelectedIcon: false,
+              segments: const [
+                ButtonSegment(value: EventFilter.all, label: Text('All')),
+                ButtonSegment(value: EventFilter.upcoming, label: Text('Upcoming')),
+                ButtonSegment(value: EventFilter.going, label: Text('Going')),
+              ],
+              selected: {filter},
+              onSelectionChanged: (s) => provider.setFilter(s.first),
+            ),
+          ),
+        ),
+        const SizedBox(height: 6),
+      ],
     );
   }
 }
