@@ -6,6 +6,7 @@ import '../screens/register_screen.dart';
 import '../screens/splash_screen.dart';
 import '../screens/student_details_screen.dart';
 import '../screens/student_form_screen.dart';
+import '../screens/onboarding_screen.dart';
 
 class AppRoutes 
 {
@@ -15,6 +16,7 @@ class AppRoutes
   static const home = '/home';
   static const studentDetails = '/student-details';
   static const studentForm = '/student-form';
+    static const onboarding = '/onboarding';
 
   static Route<dynamic> generateRoute(RouteSettings settings) 
   {
@@ -22,6 +24,8 @@ class AppRoutes
     {
       case login:
         return _page(const LoginScreen());
+      case onboarding:
+        return _page(const OnboardingScreen());
       case register:
         return _page(const RegisterScreen());
       case home:

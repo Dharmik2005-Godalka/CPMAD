@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../utils/app_routes.dart';
+import '../services/prefs_service.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -17,8 +18,15 @@ class _SplashScreenState extends State<SplashScreen> {
     Future.delayed(const Duration(milliseconds: 2200), _goNext);
   }
 
-  void _goNext() {
+  Future<void> _goNext() async {
+    final seen = await PrefsService().getOnboardingSeen();
     if (!mounted) return;
+
+    if (!seen) {
+      Navigator.pushReplacementNamed(context, AppRoutes.onboarding);
+      return;
+    }
+
     final loggedIn = context.read<AuthProvider>().isLoggedIn;
     Navigator.pushReplacementNamed(
       context,
@@ -32,7 +40,6 @@ class _SplashScreenState extends State<SplashScreen> {
 
     return Scaffold(
       body: Center(
-        // Animation: the logo fades in and scales up
         child: TweenAnimationBuilder<double>(
           tween: Tween(begin: 0, end: 1),
           duration: const Duration(milliseconds: 1200),

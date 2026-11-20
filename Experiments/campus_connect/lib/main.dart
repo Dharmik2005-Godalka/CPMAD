@@ -42,8 +42,8 @@ class MyApp extends StatelessWidget
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'CampusConnect',
-      theme: AppTheme.light,
-      darkTheme: AppTheme.dark,
+      theme: AppTheme.build(theme.seedColor, Brightness.light),
+      darkTheme: AppTheme.build(theme.seedColor, Brightness.dark),
       themeMode: theme.mode,
       initialRoute: AppRoutes.splash,
       onGenerateRoute: AppRoutes.generateRoute,
