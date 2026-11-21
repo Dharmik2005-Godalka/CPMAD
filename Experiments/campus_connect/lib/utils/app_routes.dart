@@ -10,6 +10,7 @@ import '../screens/onboarding_screen.dart';
 import '../models/note.dart';
 import '../screens/event_form_screen.dart';
 import '../screens/note_editor_screen.dart';
+import '../screens/event_details_screen.dart';
 
 class AppRoutes 
 {
@@ -22,6 +23,7 @@ class AppRoutes
   static const onboarding = '/onboarding';
   static const eventForm = '/event-form';
   static const noteEditor = '/note-editor';
+  static const eventDetails = '/event-details';
 
   static Route<dynamic> generateRoute(RouteSettings settings) 
   {
@@ -47,6 +49,14 @@ class AppRoutes
         return _page(const EventFormScreen());
       case noteEditor:
         return _page(NoteEditorScreen(note: settings.arguments as Note?));
+      case eventDetails:
+        return _fadeSlidePage(
+          EventDetailsScreen(
+            event: (settings.arguments as EventDetailsArgs).event,
+            heroTag: (settings.arguments as EventDetailsArgs).heroTag,
+          ),
+          settings,
+        );
       case splash:
       default:
         return _page(const SplashScreen());
@@ -56,5 +66,27 @@ class AppRoutes
   static MaterialPageRoute<dynamic> _page(Widget screen) 
   {
     return MaterialPageRoute(builder: (_) => screen);
+  }
+
+  static PageRouteBuilder<dynamic> _fadeSlidePage(
+    Widget screen,
+    RouteSettings settings,
+  ) {
+    return PageRouteBuilder(
+      settings: settings,
+      transitionDuration: const Duration(milliseconds: 450),
+      pageBuilder: (context, animation, secondaryAnimation) => screen,
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        final slide = Tween(
+          begin: const Offset(0, 0.15),
+          end: Offset.zero,
+        ).chain(CurveTween(curve: Curves.easeOutCubic));
+
+        return FadeTransition(
+          opacity: animation,
+          child: SlideTransition(position: animation.drive(slide), child: child),
+        );
+      },
+    );
   }
 }

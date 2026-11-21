@@ -1,11 +1,13 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-// Local persistence: theme, theme color, onboarding flag and last login email
-class PrefsService {
+class PrefsService 
+{
   static const _darkKey = 'dark_mode';
   static const _emailKey = 'last_email';
   static const _colorKey = 'theme_color';
   static const _onboardingKey = 'onboarding_seen';
+  static const _rsvpKey = 'rsvp_ids';
+  static const _localeKey = 'locale_code';
 
   Future<bool> getDarkMode() async {
     final prefs = await SharedPreferences.getInstance();
@@ -45,5 +47,26 @@ class PrefsService {
   Future<void> setOnboardingSeen() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_onboardingKey, true);
+  }
+
+  // RSVP status: ids of the events the user is going to
+  Future<Set<String>> getRsvpIds() async {
+    final prefs = await SharedPreferences.getInstance();
+    return (prefs.getStringList(_rsvpKey) ?? []).toSet();
+  }
+
+  Future<void> setRsvpIds(Set<String> ids) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList(_rsvpKey, ids.toList());
+  }
+
+  Future<String> getLocaleCode() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_localeKey) ?? 'en';
+  }
+
+  Future<void> setLocaleCode(String code) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_localeKey, code);
   }
 }

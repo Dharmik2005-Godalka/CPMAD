@@ -1,17 +1,19 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'providers/auth_provider.dart';
+import 'providers/event_provider.dart';
+import 'providers/locale_provider.dart';
+import 'providers/note_provider.dart';
 import 'providers/student_provider.dart';
 import 'providers/theme_provider.dart';
 import 'utils/app_routes.dart';
+import 'utils/app_strings.dart';
 import 'utils/app_theme.dart';
-import 'providers/event_provider.dart';
-import 'providers/note_provider.dart';
 
-Future<void> main() async 
-{
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -20,10 +22,14 @@ Future<void> main() async
   final themeProvider = ThemeProvider();
   await themeProvider.load();
 
+  final localeProvider = LocaleProvider();
+  await localeProvider.load();
+
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider.value(value: themeProvider),
+        ChangeNotifierProvider.value(value: localeProvider),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => StudentProvider()),
         ChangeNotifierProvider(create: (_) => EventProvider()),
@@ -34,21 +40,28 @@ Future<void> main() async
   );
 }
 
-class MyApp extends StatelessWidget 
-{
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) 
-  {
+  Widget build(BuildContext context) {
     final theme = context.watch<ThemeProvider>();
+    final localeProvider = context.watch<LocaleProvider>();
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'CampusConnect',
+      onGenerateTitle: (context) => AppStrings.of(context).appTitle,
       theme: AppTheme.build(theme.seedColor, Brightness.light),
       darkTheme: AppTheme.build(theme.seedColor, Brightness.dark),
       themeMode: theme.mode,
+      locale: localeProvider.locale,
+      supportedLocales: AppStrings.supportedLocales,
+      localizationsDelegates: const [
+        AppStrings.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       initialRoute: AppRoutes.splash,
       onGenerateRoute: AppRoutes.generateRoute,
     );
