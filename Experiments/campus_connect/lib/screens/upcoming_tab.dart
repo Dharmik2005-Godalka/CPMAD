@@ -5,6 +5,7 @@ import '../utils/app_strings.dart';
 import '../utils/extensions.dart';
 import '../widgets/event_list.dart';
 import '../widgets/state_views.dart';
+import '../widgets/skeleton.dart';
 
 class UpcomingTab extends StatefulWidget {
   const UpcomingTab({super.key});
@@ -34,7 +35,7 @@ class _UpcomingTabState extends State<UpcomingTab>
     final s = AppStrings.of(context);
     final provider = context.watch<EventProvider>();
 
-    if (provider.isLoading) return const LoadingView();
+    if (provider.isLoading) return const SkeletonList();
 
     if (provider.error != null) {
       return ErrorView(message: s.loadError, onRetry: provider.retry);

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/student.dart';
 import '../services/student_service.dart';
 import '../utils/constants.dart';
+import '../utils/error_messages.dart';
 
 class StudentProvider extends ChangeNotifier 
 {
@@ -14,7 +15,7 @@ class StudentProvider extends ChangeNotifier
   String? _error;
   String _searchQuery = '';
   String _selectedDepartment = 'All';
-    int _selectedYear = 0; // 0 = all years
+  int _selectedYear = 0; 
   StudentSort _sort = StudentSort.nameAsc;
 
   static const Duration _writeTimeout = Duration(seconds: 15);
@@ -136,9 +137,8 @@ class StudentProvider extends ChangeNotifier
         _error = null;
         notifyListeners();
       },
-      onError: (_) 
-      {
-        _error = 'Could not load students. Check your connection and try again.';
+      onError: (error) {
+        _error = friendlyError(error);
         _isLoading = false;
         notifyListeners();
       },

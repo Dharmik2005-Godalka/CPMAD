@@ -56,4 +56,18 @@ class NoteStorage {
     } catch (_) {
     }
   }
+
+  Future<void> clear() async {
+    try {
+      if (kIsWeb) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.remove(_webKey);
+      } else {
+        final file = await _file();
+        if (await file.exists()) await file.delete();
+      }
+    } catch (_) {
+      // nothing to delete
+    }
+  }
 }

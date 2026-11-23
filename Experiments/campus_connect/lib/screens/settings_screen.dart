@@ -8,6 +8,8 @@ import '../widgets/responsive_center.dart';
 import '../utils/app_theme.dart';
 import '../providers/event_provider.dart';
 import '../providers/note_provider.dart';
+import '../providers/locale_provider.dart';
+import '../services/prefs_service.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -72,6 +74,16 @@ class SettingsScreen extends StatelessWidget {
                 ),
               ),
             ),
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.delete_sweep_outlined),
+                title: const Text('Clear local data'),
+                subtitle: const Text(
+                  'Notes, saved settings and the on-device RSVP copy',
+                ),
+                onTap: () => _confirmClearData(context),
+              ),
+            ),
             const SizedBox(height: 16),
             OutlinedButton.icon(
               onPressed: () => _confirmLogout(context),
@@ -83,6 +95,8 @@ class SettingsScreen extends StatelessWidget {
       ),
     );
   }
+
+  
 
   Future<void> _confirmLogout(BuildContext context) async {
     final confirmed = await showDialog<bool>(
@@ -112,5 +126,42 @@ class SettingsScreen extends StatelessWidget {
     if (!context.mounted) return;
 
     Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (r) => false);
+  }
+
+  Future<void> _confirmClearData(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Clear local data?'),
+        content: const Text(
+          'This deletes your notes and saved settings on this device. '
+          'Events, students and RSVPs stored in the cloud are not affected.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Clear'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !context.mounted) return;
+
+    final messenger = ScaffoldMessenger.of(context);
+    final themeProvider = context.read<ThemeProvider>();
+    final localeProvider = context.read<LocaleProvider>();
+
+    await PrefsService().clearAll();
+    await themeProvider.load();
+    await localeProvider.load();// back to English
+
+    messenger.showSnackBar(
+      const SnackBar(content: Text('Local data cleared')),
+    );
   }
 }

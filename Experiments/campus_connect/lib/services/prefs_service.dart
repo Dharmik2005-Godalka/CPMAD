@@ -69,4 +69,9 @@ class PrefsService
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_localeKey, code);
   }
+
+  Future<void> clearAll() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+  }
 }

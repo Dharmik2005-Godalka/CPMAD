@@ -6,6 +6,7 @@ import '../services/event_sync_service.dart';
 import '../services/prefs_service.dart';
 import '../utils/constants.dart';
 import '../utils/extensions.dart';
+import '../utils/error_messages.dart';
 
 class EventProvider extends ChangeNotifier {
   final EventSyncService _service = EventSyncService();
@@ -97,8 +98,8 @@ class EventProvider extends ChangeNotifier {
         _error = null;
         notifyListeners();
       },
-      onError: (_) {
-        _error = 'Could not load events. Check your connection and try again.';
+      onError: (error) {
+        _error = friendlyError(error);
         _isLoading = false;
         notifyListeners();
       },

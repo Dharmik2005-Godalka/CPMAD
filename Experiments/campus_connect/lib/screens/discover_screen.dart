@@ -13,6 +13,7 @@ import '../widgets/event_grid_card.dart';
 import '../widgets/event_list_tile.dart';
 import '../widgets/state_views.dart';
 import 'event_details_screen.dart';
+import '../widgets/skeleton.dart';
 
 class DiscoverScreen extends StatefulWidget {
   const DiscoverScreen({super.key});
@@ -90,7 +91,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     );
   }
 
-  // ---------- Firestore section ----------
+  //Firestore section
   List<Widget> buildFirestoreSlivers(
     BuildContext context,
     AsyncSnapshot<EventsSnapshot> snapshot,
@@ -113,8 +114,15 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     }
 
     if (!snapshot.hasData) {
-      return const [
-        SliverToBoxAdapter(child: SizedBox(height: 200, child: LoadingView())),
+      return [
+        SliverToBoxAdapter(
+          child: Column(
+            children: List<Widget>.generate(
+              4,
+              (index) => SkeletonCard(),
+            ),
+          ),
+        ),
       ];
     }
 
@@ -296,15 +304,21 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     );
   }
 
-  // ---------- API section ----------
+  //API 
   List<Widget> buildPublicSlivers(PublicEventProvider provider) {
     final Widget body;
 
     if (provider.isLoading) {
-      body = const SliverToBoxAdapter(
-        child: SizedBox(height: 160, child: LoadingView()),
+      body = SliverToBoxAdapter(
+        child: Column(
+          children: List<Widget>.generate(
+            3,
+            (index) => SkeletonCard(),
+          ),
+        ),
       );
-    } else if (provider.error != null) {
+    }
+    else if (provider.error != null) {
       body = SliverToBoxAdapter(
         child: SizedBox(
           height: 200,

@@ -6,6 +6,7 @@ import '../utils/app_routes.dart';
 import '../utils/constants.dart';
 import '../widgets/state_views.dart';
 import '../widgets/student_card.dart';
+import '../widgets/skeleton.dart';
 
 class StudentListScreen extends StatelessWidget {
   const StudentListScreen({super.key});
@@ -27,7 +28,7 @@ class StudentListScreen extends StatelessWidget {
 
   Widget buildBody(BuildContext context, StudentProvider provider) {
     // 1. Loading
-    if (provider.isLoading) return const LoadingView();
+    if (provider.isLoading) return const SkeletonList();
 
     // 2. Error
     if (provider.error != null) {

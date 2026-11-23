@@ -22,11 +22,12 @@ class _HomeScreenState extends State<HomeScreen> {
   int _index = 0;
 
   final List<Widget> _pages = const [
-    DiscoverScreen(),
-    EventsScreen(),
-    StudentListScreen(),
-    DashboardScreen(),
-    SettingsScreen(),
+    DiscoverScreen(),     // Home
+    EventsScreen(),       // Events
+    StudentListScreen(),  // Students
+    DashboardScreen(),    // Dashboard
+    SettingsScreen(),     // Settings
+    NotesScreen(),        // Notes
   ];
 
   @override

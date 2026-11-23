@@ -4,6 +4,7 @@ import '../providers/note_provider.dart';
 import '../utils/app_strings.dart';
 import '../utils/extensions.dart';
 import '../widgets/state_views.dart';
+import '../widgets/skeleton.dart';
 
 class NotesTab extends StatelessWidget 
 {
@@ -27,10 +28,7 @@ class NotesTab extends StatelessWidget
 
   Widget buildBody(NoteProvider provider, AppStrings s) 
   {
-    if (provider.isLoading) 
-    {
-      return const LoadingView();
-    }
+    if (provider.isLoading) return const SkeletonList();
 
     final notes = provider.notes;
 

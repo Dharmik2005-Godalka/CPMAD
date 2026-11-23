@@ -4,6 +4,7 @@ import '../providers/event_provider.dart';
 import '../utils/app_strings.dart';
 import '../widgets/event_list.dart';
 import '../widgets/state_views.dart';
+import '../widgets/skeleton.dart';
 
 class MyEventsTab extends StatelessWidget 
 {
@@ -15,7 +16,7 @@ class MyEventsTab extends StatelessWidget
     final s = AppStrings.of(context);
     final provider = context.watch<EventProvider>();
 
-    if (provider.isLoading) return const LoadingView();
+    if (provider.isLoading) return const SkeletonList();
 
     if (provider.error != null) 
     {
