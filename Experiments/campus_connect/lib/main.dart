@@ -12,11 +12,17 @@ import 'providers/theme_provider.dart';
 import 'utils/app_routes.dart';
 import 'utils/app_strings.dart';
 import 'utils/app_theme.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'providers/public_event_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+    FirebaseFirestore.instance.settings = const Settings(
+    persistenceEnabled: true,
   );
 
   final themeProvider = ThemeProvider();
@@ -34,6 +40,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => StudentProvider()),
         ChangeNotifierProvider(create: (_) => EventProvider()),
         ChangeNotifierProvider(create: (_) => NoteProvider()),
+        ChangeNotifierProvider(create: (_) => PublicEventProvider()),
       ],
       child: const MyApp(),
     ),
